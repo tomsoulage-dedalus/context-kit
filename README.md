@@ -8,16 +8,61 @@ It installs a documentation method, not a documentation generator: an entry poin
 indexes, one small card per key module, governance rules, a freshness check, and an evaluation bench
 to prove the context helps.
 
-## The method in one picture
+## What gets installed in a repository
 
+An agent always enters through `AGENTS.md`, follows one route, and reads only the card of the module
+it works on, then the code.
+
+```mermaid
+flowchart TD
+    agent(["Coding agent<br/>Copilot, Claude Code, opencode"])
+    pointers["CLAUDE.md<br/>.github/copilot-instructions.md<br/><i>pointers only</i>"]
+    router[".github/instructions/context.instructions.md<br/><i>applyTo router: read the index first</i>"]
+    agents["AGENTS.md<br/>precedence, routing table task -> file, repository map"]
+    gov["docs/context/README.md<br/>governance: what belongs, one owner per fact, freshness"]
+    rules[".github/instructions/*.instructions.md<br/>procedural rules (what to do)"]
+    arch["&lt;scope&gt;/ARCHITECTURE.md<br/>layers, aliases, glossary, routing, documented modules"]
+    ctxA["&lt;module A&gt;/CONTEXT.md<br/>~50 lines: role, entry points, flows,<br/>dependencies, traps, where to look"]
+    ctxB["&lt;module B&gt;/CONTEXT.md"]
+    code[("Source, tests, build, CI<br/><b>the evidence</b>")]
+
+    agent --> pointers --> agents
+    agent --> router --> arch
+    agent --> agents
+    agents -->|route| arch
+    agents -.->|maintaining context| gov
+    arch -->|only the module concerned| ctxA
+    arch -.-> ctxB
+    ctxA -->|then read| code
+    ctxA -.->|one-line pointer to a rule| rules
+    gov -.->|owns the rules of| arch
 ```
-AGENTS.md                      entry point: precedence + routing table "task -> file to read"
- |-- CLAUDE.md, .github/copilot-instructions.md      thin pointers to AGENTS.md
- |-- .github/instructions/context.instructions.md    applyTo router: "read the index first"
- |-- docs/context/README.md                          governance (owns the rules below)
- `-- <scope>/ARCHITECTURE.md    index: layers, aliases, glossary, routing, documented modules
-      `-- <module>/CONTEXT.md    ~50-line card next to the code: role, entry points, flows,
-                                 dependencies, traps and invariants, where to look
+
+## Lifecycle
+
+The four skills install, write, keep fresh, and measure the context.
+
+```mermaid
+flowchart TD
+    subgraph setup ["1. Set up (once)"]
+        direction LR
+        install["install.sh<br/>template + skills"] --> init["context-init<br/>inventory: size, churn, fan-in<br/>propose scopes and 3-5 pilot modules"]
+        init -->|user validates| idx["AGENTS.md<br/>ARCHITECTURE.md"]
+    end
+    subgraph pilot ["2. Pilot and measure"]
+        direction LR
+        module["context-module<br/>one CONTEXT.md per pilot module<br/>+ provenance line"] --> eval{"context-eval<br/>replay 5-6 past tickets<br/>no-context vs context"}
+        eval -->|gain| extend["Document more modules"]
+        eval -->|no gain| reshape["Reshape or prune the cards"]
+    end
+    subgraph run ["3. Keep fresh (every change)"]
+        direction LR
+        change["Code change / PR"] --> check{"context-check<br/>quoted files and symbols exist?<br/>module changed without card update?"}
+        check -->|ok| merge["Merge"]
+        check -->|stale| update["context-module<br/>update mode"]
+        update --> check
+    end
+    setup --> pilot --> run
 ```
 
 Principles (owned by [`template/docs/context/README.md`](template/docs/context/README.md) once installed):
