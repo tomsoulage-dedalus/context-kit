@@ -1,0 +1,25 @@
+{
+  "tasks": [
+    {
+      "id": "EXAMPLE-1234-cancel-order",
+      "source": "https://your-tracker/browse/EXAMPLE-1234 (PR #42, merged as abc1234)",
+      "base_ref": "0000000000000000000000000000000000000000",
+      "prompt": "Paste the ticket description here, as the developer received it. Do not hint at files.",
+      "allowed_paths": ["src/orders/**"],
+      "required_changed_paths": ["src/orders/order.service.ts", "src/orders/order.service.spec.ts"],
+      "max_changed_files": 4,
+      "required_patterns": [
+        { "name": "adds a cancel method", "glob": "src/orders/order.service.ts", "pattern": "cancel\\w*\\(" }
+      ],
+      "forbidden_patterns": [
+        { "name": "does not introduce any", "glob": "src/**/*.ts", "pattern": ":\\s*any\\b" }
+      ],
+      "prepare_commands": [
+        { "name": "install", "argv": ["npm", "ci", "--ignore-scripts"] }
+      ],
+      "commands": [
+        { "name": "unit tests", "argv": ["npm", "test", "--", "--watch=false"] }
+      ]
+    }
+  ]
+}
