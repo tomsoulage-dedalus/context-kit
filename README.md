@@ -1,5 +1,7 @@
 # context-kit
 
+English | [Français](README.fr.md)
+
 A template to add to any existing repository so that coding agents (GitHub Copilot, Claude Code,
 opencode...) and developers get **short, routed, verified context** instead of grepping a large
 codebase blindly.
