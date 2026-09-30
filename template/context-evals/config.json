@@ -1,0 +1,20 @@
+{
+  "agent_command": "copilot -p {prompt} --allow-all-tools -s",
+  "model": "",
+  "repetitions": 3,
+  "results_dir": "context-evals/results",
+  "task_files": ["tasks/*.json", "tasks/*.yml", "tasks/*.yaml"],
+  "context_globs": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    ".github/copilot-instructions.md",
+    ".github/instructions/context.instructions.md",
+    "docs/context/**",
+    "**/ARCHITECTURE.md",
+    "**/CONTEXT.md"
+  ],
+  "variants": {
+    "no-context": { "context_source": "none" },
+    "context": { "context_source": "working-tree" }
+  }
+}
